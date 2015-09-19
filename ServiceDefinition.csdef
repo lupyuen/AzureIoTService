@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="AzureIoTService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
+  <WebRole name="WebRole1" vmsize="Small">
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="Endpoint1" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="NewRelic.LicenseKey" />
+    </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="Endpoint1" protocol="http" port="80" />
+    </Endpoints>
+    <LocalResources>
+      <LocalStorage name="InstallLogs" sizeInMB="5" cleanOnRoleRecycle="false" />
+    </LocalResources>
+    <Startup>
+      <Task commandLine="install.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="PathToInstallLogs">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='InstallLogs']/@path" />
+          </Variable>
+        </Environment>
+      </Task>
+      <Task commandLine="newrelic.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="EMULATED">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </Variable>
+          <Variable name="IsWorkerRole" value="false" />
+          <Variable name="LICENSE_KEY">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='NewRelic.LicenseKey']/@value" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
+  </WebRole>
+  <WorkerRole name="WorkerRole1" vmsize="Small">
+    <Runtime>
+      <Environment>
+        <Variable name="COR_ENABLE_PROFILING" value="1" />
+        <Variable name="COR_PROFILER" value="{71DA0A04-7777-4EC6-9643-7D28B46A8A41}" />
+        <Variable name="NEWRELIC_HOME" value="D:\ProgramData\New Relic\.NET Agent\" />
+        <Variable name="NEWRELIC_INSTALL_PATH" value="D:\Program Files\New Relic\.NET Agent\" />
+      </Environment>
+    </Runtime>
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="NewRelic.LicenseKey" />
+    </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="RemoteProcessServer_2012" protocol="tcp" port="2012" />
+    </Endpoints>
+    <LocalResources>
+      <LocalStorage name="InstallLogs" sizeInMB="5" cleanOnRoleRecycle="false" />
+    </LocalResources>
+    <Startup>
+      <Task commandLine="install.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="PathToInstallLogs">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/LocalResources/LocalResource[@name='InstallLogs']/@path" />
+          </Variable>
+        </Environment>
+      </Task>
+      <Task commandLine="newrelic.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="EMULATED">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </Variable>
+          <Variable name="IsWorkerRole" value="true" />
+          <Variable name="LICENSE_KEY">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='NewRelic.LicenseKey']/@value" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
+  </WorkerRole>
+</ServiceDefinition>
