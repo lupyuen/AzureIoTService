@@ -94,7 +94,7 @@ namespace WorkerRole1
             // TODO: Replace the following with your own logic.
             while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("Working");
+                ////Trace.TraceInformation("Working");
                 await Task.Delay(1000);
             }
         }
