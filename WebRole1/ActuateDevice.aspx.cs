@@ -17,6 +17,7 @@ namespace WebRole1
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.Expires = -1;
+            var group = Request["group"];
             var device = Request["device"];
             var action = Request["action"];
             var parameter = Request["parameter"];

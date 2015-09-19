@@ -38,6 +38,9 @@
         </Environment>
       </Task>
     </Startup>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+    </Imports>
   </WebRole>
   <WorkerRole name="WorkerRole1" vmsize="Small">
     <Runtime>
@@ -78,5 +81,9 @@
         </Environment>
       </Task>
     </Startup>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
   </WorkerRole>
 </ServiceDefinition>

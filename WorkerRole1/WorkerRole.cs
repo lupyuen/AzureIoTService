@@ -24,6 +24,10 @@ namespace WorkerRole1
         public override void Run()
         {
             Trace.TraceInformation("WorkerRole1 is running");
+            var eventAttributes = new Dictionary<String, Object>();
+            eventAttributes["state"] = "Begin";
+            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Run", eventAttributes);
+
 
             //  Start listening for actuation events.
             string eventHubConnectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=ReceiveRule;SharedAccessKey=905MauqIRlwOAdzbFOrctA3+YtO8Od4lUzFPL0AqAsA=";
@@ -38,6 +42,10 @@ namespace WorkerRole1
             Trace.WriteLine("Registering EventProcessor...");
             eventProcessorHost.RegisterEventProcessorAsync<EventProcessor>().Wait();
 
+            eventAttributes = new Dictionary<String, Object>();
+            eventAttributes["state"] = "End";
+            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Run", eventAttributes);
+
             try
             {
                 this.RunAsync(this.cancellationTokenSource.Token).Wait();
@@ -46,14 +54,19 @@ namespace WorkerRole1
             {
                 this.runCompleteEvent.Set();
             }
+
         }
 
         IBootstrap m_Bootstrap = null;
 
         public override bool OnStart()
         {
+            var eventAttributes = new Dictionary<String, Object>();
+            eventAttributes["state"] = "Begin";
+            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("OnStart", eventAttributes);
+
             // Set the maximum number of concurrent connections 
-            ServicePointManager.DefaultConnectionLimit = 100;
+            ServicePointManager.DefaultConnectionLimit = 200;
 
             // For information on handling configuration changes
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
@@ -88,6 +101,10 @@ namespace WorkerRole1
                     Trace.WriteLine("Some server instances were started successfully, but the others failed to start! Please check error log for more information!");
                     break;
             }
+
+            eventAttributes = new Dictionary<String, Object>();
+            eventAttributes["state"] = "End";
+            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("OnStart", eventAttributes);
 
             return base.OnStart();
         }
