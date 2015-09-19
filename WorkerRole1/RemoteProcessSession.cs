@@ -16,6 +16,12 @@ namespace SuperSocket.QuickStart.RemoteProcessService
         protected override void OnSessionStarted()
         {
             Send("Welcome to use this tool!");
+            //  TODO: Add to list of active sessions. Remember Group and Device ID.
+        }
+
+        protected override void OnSessionClosed(CloseReason reason)
+        {
+            //  TODO: Remove from list of active sessions.
         }
 
         protected override void HandleException(Exception e)

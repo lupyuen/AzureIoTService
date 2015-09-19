@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Diagnostics;
+using Newtonsoft.Json;
 
 namespace WorkerRole1
 {
@@ -38,6 +39,12 @@ namespace WorkerRole1
 
                 Trace.WriteLine(string.Format("Message received.  Partition: '{0}', Data: '{1}'",
                     context.Lease.PartitionId, data));
+
+                //  Convert data to JSON.
+                //  data looks like {"group":"1", "device":"2", "action":"led", "parameter":"on"}
+                var query = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
+
+                //  TODO: Send data to the right session.
             }
 
             //Call checkpoint every 5 minutes, so that worker can resume processing from the 5 minutes back if it restarts.

@@ -1,4 +1,6 @@
-﻿using Microsoft.ServiceBus.Messaging;
+﻿//  http://localhost:53385/ActuateDevice.aspx?group=1&device=2&action=led&parameter=on
+using Microsoft.ServiceBus.Messaging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +24,17 @@ namespace WebRole1
             var action = Request["action"];
             var parameter = Request["parameter"];
 
+            //  Convert the query string to a JSON message before sending it.
+            //  The message will look like {"group":"1", "device":"2", "action":"led", "parameter":"on"}
+            var query = new Dictionary<string, string>();
+            foreach (var key in Request.QueryString.AllKeys)
+            {
+                query[key] = Request[key];
+            }
+            var message = JsonConvert.SerializeObject(query);
+
             var eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, eventHubName);
-            var message = Guid.NewGuid().ToString();
-            Trace.Write(string.Format("{0} > Sending message: {1}", DateTime.Now, message));
+            System.Diagnostics.Trace.WriteLine(string.Format("{0} > Sending message: {1}", DateTime.Now, message));
             eventHubClient.Send(new EventData(Encoding.UTF8.GetBytes(message)));
 
             Response.Write("'OK'");
