@@ -4,7 +4,6 @@
     <WadCfg>
       <DiagnosticMonitorConfiguration overallQuotaInMB="4096">
         <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter="Error" />
-        <Logs scheduledTransferPeriod="PT1M" scheduledTransferLogLevelFilter="Error" />
         <Directories scheduledTransferPeriod="PT1M">
           <IISLogs containerName="wad-iis-logfiles" />
           <FailedRequestLogs containerName="wad-failedrequestlogs" />
@@ -14,14 +13,6 @@
             </DirectoryConfiguration>
           </DataSources>
         </Directories>
-        <WindowsEventLog scheduledTransferPeriod="PT1M">
-          <DataSource name="Application!*" />
-        </WindowsEventLog>
-        <CrashDumps containerName="wad-crashdumps" dumpType="Mini">
-          <CrashDumpConfiguration processName="WaIISHost.exe" />
-          <CrashDumpConfiguration processName="WaWorkerHost.exe" />
-          <CrashDumpConfiguration processName="w3wp.exe" />
-        </CrashDumps>
         <PerformanceCounters scheduledTransferPeriod="PT1M">
           <PerformanceCounterConfiguration counterSpecifier="\Memory\Available MBytes" sampleRate="PT3M" />
           <PerformanceCounterConfiguration counterSpecifier="\Web Service(_Total)\ISAPI Extension Requests/sec" sampleRate="PT3M" />
@@ -32,12 +23,21 @@
           <PerformanceCounterConfiguration counterSpecifier="\ASP.NET\Requests Rejected" sampleRate="PT3M" />
           <PerformanceCounterConfiguration counterSpecifier="\Processor(_Total)\% Processor Time" sampleRate="PT3M" />
         </PerformanceCounters>
+        <WindowsEventLog scheduledTransferPeriod="PT1M">
+          <DataSource name="Application!*" />
+        </WindowsEventLog>
+        <CrashDumps>
+          <CrashDumpConfiguration processName="WaIISHost.exe" />
+          <CrashDumpConfiguration processName="WaWorkerHost.exe" />
+          <CrashDumpConfiguration processName="w3wp.exe" />
+        </CrashDumps>
+        <Logs scheduledTransferPeriod="PT1M" scheduledTransferLogLevelFilter="Error" />
       </DiagnosticMonitorConfiguration>
     </WadCfg>
-    <StorageAccount>portalvhds6sz3kwcsk0lrp</StorageAccount>
+    <StorageAccount>portalvhdslxv9b166jxqjp</StorageAccount>
   </PublicConfig>
   <PrivateConfig xmlns="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration">
-    <StorageAccount name="portalvhds6sz3kwcsk0lrp" key="OKWg3Puwdx/YgivMW5eQ5gyAfFWJ3kbgzJYcZFYR27hyu4P4CwEMkh/E4K+K1IHAt5+HfLLBYMSvrbYn0xNqTg==" endpoint="https://core.windows.net" />
+    <StorageAccount endpoint="https://core.windows.net" name="portalvhdslxv9b166jxqjp" key="Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
   </PrivateConfig>
   <IsEnabled>true</IsEnabled>
 </DiagnosticsConfiguration>

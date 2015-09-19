@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using SuperSocket.SocketEngine;
 using SuperSocket.SocketBase;
+using Microsoft.ServiceBus.Messaging;
 
 namespace WorkerRole1
 {
@@ -18,10 +19,24 @@ namespace WorkerRole1
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
+        EventProcessorHost eventProcessorHost = null;
 
         public override void Run()
         {
             Trace.TraceInformation("WorkerRole1 is running");
+
+            //  Start listening for actuation events.
+            string eventHubConnectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=ReceiveRule;SharedAccessKey=905MauqIRlwOAdzbFOrctA3+YtO8Od4lUzFPL0AqAsA=";
+            string eventHubName = "azureiothub";
+            string storageAccountName = "azureiotstorage";
+            string storageAccountKey = "OE8ELPPu30uc1BVRW21WH3Sb6aoTkRNbP4vmYX0eLAukYNS9prF13laVUJHQkx0hVrIeDt88a5TAwQflEcTqNg==";
+            string storageConnectionString = string.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}",
+                storageAccountName, storageAccountKey);
+
+            string eventProcessorHostName = Guid.NewGuid().ToString();
+            eventProcessorHost = new EventProcessorHost(eventProcessorHostName, eventHubName, EventHubConsumerGroup.DefaultGroupName, eventHubConnectionString, storageConnectionString);
+            Trace.WriteLine("Registering EventProcessor...");
+            eventProcessorHost.RegisterEventProcessorAsync<EventProcessor>().Wait();
 
             try
             {
@@ -80,6 +95,9 @@ namespace WorkerRole1
         public override void OnStop()
         {
             Trace.TraceInformation("WorkerRole1 is stopping");
+
+            //  Stop listening for actuation events.
+            eventProcessorHost.UnregisterEventProcessorAsync().Wait();
 
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();

@@ -9,7 +9,7 @@
           <FailedRequestLogs containerName="wad-failedrequestlogs" />
           <DataSources>
             <DirectoryConfiguration containerName="netfx-install">
-              <LocalResource relativePath="." name="InstallLogs" />
+              <LocalResource name="InstallLogs" relativePath="." />
             </DirectoryConfiguration>
           </DataSources>
         </Directories>
@@ -25,7 +25,6 @@
         </PerformanceCounters>
         <WindowsEventLog scheduledTransferPeriod="PT1M">
           <DataSource name="Application!*" />
-          <DataSource name="System!*" />
         </WindowsEventLog>
         <CrashDumps>
           <CrashDumpConfiguration processName="WaIISHost.exe" />
@@ -38,7 +37,7 @@
     <StorageAccount>portalvhdslxv9b166jxqjp</StorageAccount>
   </PublicConfig>
   <PrivateConfig xmlns="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration">
-    <StorageAccount name="portalvhdslxv9b166jxqjp" endpoint="https://core.windows.net" key="Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
+    <StorageAccount endpoint="https://core.windows.net" name="portalvhdslxv9b166jxqjp" key="Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
   </PrivateConfig>
   <IsEnabled>true</IsEnabled>
 </DiagnosticsConfiguration>
