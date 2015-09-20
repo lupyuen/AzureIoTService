@@ -9,12 +9,17 @@ echo Logfile generated at: %newreliclog% >> %newreliclog%
 
 :: Path used for custom configuration and worker role environment varibles
 SET NR_HOME=%ALLUSERSPROFILE%\New Relic\.NET Agent\
+mkdir "%NR_HOME%"
+mkdir "%NR_HOME%\extensions\"
 
 :: Must copy twice in case the files have been updated.
-:: CUSTOM newrelic.config : Uncomment the line below if you want to copy a custom newrelic.config file into your instance
-copy /Y newrelic.config %NR_HOME% >> %newreliclog%
-:: CUSTOM INSTRUMENTATION : Uncomment the line below to copy custom instrumentation into the agent directory.
-copy /y CustomInstrumentation.xml %NR_HOME%\extensions >> %newreliclog%
+:: CUSTOM newrelic.config : Uncomment the lines below if you want to copy a custom newrelic.config file into your instance
+echo copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
+copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
+
+:: CUSTOM INSTRUMENTATION : Uncomment the lines below to copy custom instrumentation into the agent directory.
+echo copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
+copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
 
 :: Quit if running on local PC.
 if not %localappdata%=="" EXIT /B 0
@@ -41,8 +46,6 @@ IF %NR_ERROR_LEVEL% EQU 0 (
 
 	:: Current version of the installer
 	SET NR_INSTALLER_NAME=NewRelicAgent_x64_5.5.52.0.msi
-	:: Path used for custom configuration and worker role environment varibles
-	SET NR_HOME=%ALLUSERSPROFILE%\New Relic\.NET Agent\
 
 	ECHO Installing the New Relic .net Agent. >> "%newreliclog%" 2>&1
 
@@ -52,17 +55,19 @@ IF %NR_ERROR_LEVEL% EQU 0 (
 	    msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog%2
 	)
 
-	:: CUSTOM newrelic.config : Uncomment the line below if you want to copy a custom newrelic.config file into your instance
-	copy /Y newrelic.config %NR_HOME% >> %newreliclog%
+	:: CUSTOM newrelic.config : Uncomment the lines below if you want to copy a custom newrelic.config file into your instance
+	echo copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
+	copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
 
-	:: CUSTOM INSTRUMENTATION : Uncomment the line below to copy custom instrumentation into the agent directory.
-	copy /y CustomInstrumentation.xml %NR_HOME%\extensions >> %newreliclog%
+	:: CUSTOM INSTRUMENTATION : Uncomment the lines below to copy custom instrumentation into the agent directory.
+	echo copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
+	copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
 
 	:: WEB ROLES : Restart the service to pick up the new environment variables
 	:: 	if we are in a Worker Role then there is no need to restart W3SVC _or_
 	:: 	if we are emulating locally then do not restart W3SVC
 	IF "%IsWorkerRole%" EQU "false" IF "%EMULATED%" EQU "false" (
-		ECHO Restarting IIS and W3SVC to pick up the new environment variables >> "%RoleRoot%\nr.log" 2>&1
+		ECHO Restarting IIS and W3SVC to pick up the new environment variables >> "%newreliclog%" 2>&1
 		IISRESET
 		NET START W3SVC
 	)
@@ -87,7 +92,7 @@ GOTO:EOF
 	SET NR_INSTALLER_NAME=NewRelicServerMonitor_x64_3.3.3.0.msi
 
 	ECHO Installing the New Relic Server Monitor. >> "%newreliclog%" 2>&1
-	msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog%2
+	msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog%3
 
 	IF %ERRORLEVEL% EQU 0 (
 	  REM  The New Relic Server Monitor installed ok and does not need to be installed again.

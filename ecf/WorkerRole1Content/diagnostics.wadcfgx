@@ -34,10 +34,10 @@
         <Logs scheduledTransferPeriod="PT1M" />
       </DiagnosticMonitorConfiguration>
     </WadCfg>
-    <StorageAccount>portalvhdslxv9b166jxqjp</StorageAccount>
+    <StorageAccount>devstoreaccount1</StorageAccount>
   </PublicConfig>
   <PrivateConfig xmlns="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration">
-    <StorageAccount endpoint="https://core.windows.net" name="portalvhdslxv9b166jxqjp" key="Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
+    <StorageAccount name="devstoreaccount1" key="Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==" />
   </PrivateConfig>
   <IsEnabled>true</IsEnabled>
 </DiagnosticsConfiguration>
