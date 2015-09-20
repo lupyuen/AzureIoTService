@@ -3,7 +3,7 @@
   <Role name="WebRole1">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=portalvhdslxv9b166jxqjp;AccountKey=Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=azureiotstorage;AccountKey=OE8ELPPu30uc1BVRW21WH3Sb6aoTkRNbP4vmYX0eLAukYNS9prF13laVUJHQkx0hVrIeDt88a5TAwQflEcTqNg==" />
       <Setting name="NewRelic.LicenseKey" value="50263204fda3fbbfe89d698d16eddca86e3ed31e" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="lupyuen" />
@@ -17,7 +17,7 @@
   <Role name="WorkerRole1">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=portalvhdslxv9b166jxqjp;AccountKey=Z0m14YCEzGzTYuS7YAAo0vckPLQgjPKids1q6QNuK/xm7R53nA6i1vDEJuYHJuKABnpb4lnT/0k0v08jaJhmHA==" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=azureiotstorage;AccountKey=OE8ELPPu30uc1BVRW21WH3Sb6aoTkRNbP4vmYX0eLAukYNS9prF13laVUJHQkx0hVrIeDt88a5TAwQflEcTqNg==" />
       <Setting name="NewRelic.LicenseKey" value="50263204fda3fbbfe89d698d16eddca86e3ed31e" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="lupyuen" />
