@@ -15,9 +15,13 @@ cd >> "%startuptasklog%"
 echo Environment: >> "%startuptasklog%"
 set >> "%startuptasklog%"
 
-REM ***** Skip installation when testing on local PC. *****
-if not "%localappdata%"=="" goto end
+REM ***** Skip installation when testing on development PC. *****
+echo AZURE_DRIVE_DEV_PATH="%AZURE_DRIVE_DEV_PATH%"" >> "%startuptasklog%"
+if "%AZURE_DRIVE_DEV_PATH%"=="" goto PRODSERVER
+echo Skipping installation on development PC >> "%startuptasklog%"
+goto end
 
+:PRODSERVER
 REM ***** Setup .NET filenames and registry keys *****
 if %netfx%=="NDP46" goto NDP46
     set netfxinstallfile="NDP452-KB2901954-Web.exe"
