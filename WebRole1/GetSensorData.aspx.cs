@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -12,6 +13,7 @@ namespace WebRole1
         protected void Page_Load(object sender, EventArgs e)
         {
             //  Return a Javascript row to be populated in Excel Web.  Called by Excel Web "Update Sensor Data" addin.
+            NewRelic.Api.Agent.NewRelic.SetTransactionName("API", "GetSensorData"); var watch = Stopwatch.StartNew();
             Response.Expires = -1;
             //  Accept a list of field names, e.g. fields=Timestamp,Temperature,LightLevel
             var fields = "Timestamp,Temperature,LightLevel";  //  Default fields if none specified.
@@ -63,6 +65,8 @@ namespace WebRole1
             }
             newRow.AppendLine("];");
             Response.Write(newRow.ToString());
+
+            NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("GetSensorData", watch.ElapsedMilliseconds);
             Response.End();
         }
     }

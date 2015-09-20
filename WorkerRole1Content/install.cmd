@@ -25,7 +25,8 @@ echo Logfile generated at: %startuptasklog% >> %startuptasklog%
 REM ***** Check if .NET is installed *****
 echo Checking if .NET (%netfx%) is installed >> %startuptasklog%
 reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" /v Release | Find %netfxregkey%
-if %ERRORLEVEL%== 0 goto end
+::::  Force install .NET for now.
+:::: if %ERRORLEVEL%== 0 goto end
 
 REM ***** Installing .NET *****
 echo Installing .NET. Logfile: %netfxinstallerlog% >> %startuptasklog%

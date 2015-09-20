@@ -1,8 +1,10 @@
 ﻿//  http://localhost:53385/ActuateDevice.aspx?group=1&device=2&action=led&parameter=on
+//  http://azureiotservice.cloudapp.net/ActuateDevice.aspx?group=1&device=2&action=led&parameter=on
 using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -18,6 +20,7 @@ namespace WebRole1
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            NewRelic.Api.Agent.NewRelic.SetTransactionName("API", "ActuateDevice"); var watch = Stopwatch.StartNew();
             Response.Expires = -1;
             var group = Request["group"];
             var device = Request["device"];
@@ -36,8 +39,9 @@ namespace WebRole1
             var eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, eventHubName);
             System.Diagnostics.Trace.WriteLine(string.Format("{0} > Sending message: {1}", DateTime.Now, message));
             eventHubClient.Send(new EventData(Encoding.UTF8.GetBytes(message)));
-
             Response.Write("'OK'");
+
+            NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("ActuateDevice", watch.ElapsedMilliseconds);
             Response.End();
         }
     }

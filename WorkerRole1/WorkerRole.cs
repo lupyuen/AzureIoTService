@@ -24,11 +24,7 @@ namespace WorkerRole1
         public override void Run()
         {
             Trace.TraceInformation("WorkerRole1 is running");
-            var eventAttributes = new Dictionary<String, Object>();
-            eventAttributes["state"] = "Begin";
-            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Run", eventAttributes);
-
-
+            NewRelic.Api.Agent.NewRelic.SetTransactionName("Worker", "Run"); var watch = Stopwatch.StartNew();
             //  Start listening for actuation events.
             string eventHubConnectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=ReceiveRule;SharedAccessKey=905MauqIRlwOAdzbFOrctA3+YtO8Od4lUzFPL0AqAsA=";
             string eventHubName = "azureiothub";
@@ -42,9 +38,7 @@ namespace WorkerRole1
             Trace.WriteLine("Registering EventProcessor...");
             eventProcessorHost.RegisterEventProcessorAsync<EventProcessor>().Wait();
 
-            eventAttributes = new Dictionary<String, Object>();
-            eventAttributes["state"] = "End";
-            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Run", eventAttributes);
+            NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("Run", watch.ElapsedMilliseconds);
 
             try
             {
@@ -61,9 +55,8 @@ namespace WorkerRole1
 
         public override bool OnStart()
         {
-            var eventAttributes = new Dictionary<String, Object>();
-            eventAttributes["state"] = "Begin";
-            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("OnStart", eventAttributes);
+            Trace.TraceInformation("WorkerRole1 is starting");
+            NewRelic.Api.Agent.NewRelic.SetTransactionName("Worker", "OnStart"); var watch = Stopwatch.StartNew();
 
             // Set the maximum number of concurrent connections 
             ServicePointManager.DefaultConnectionLimit = 200;
@@ -78,6 +71,7 @@ namespace WorkerRole1
             if (!m_Bootstrap.Initialize(endpoints))
             {
                 Trace.WriteLine("Failed to initialize SuperSocket!", "Error");
+                NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("OnStart", watch.ElapsedMilliseconds);
                 return false;
             }
 
@@ -87,6 +81,7 @@ namespace WorkerRole1
             {
                 case (StartResult.None):
                     Trace.WriteLine("No server is configured, please check you configuration!");
+                    NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("OnStart", watch.ElapsedMilliseconds);
                     return false;
 
                 case (StartResult.Success):
@@ -95,6 +90,7 @@ namespace WorkerRole1
 
                 case (StartResult.Failed):
                     Trace.WriteLine("Failed to start SuperSocket server! Please check error log for more information!");
+                    NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("OnStart", watch.ElapsedMilliseconds);
                     return false;
 
                 case (StartResult.PartialSuccess):
@@ -102,9 +98,8 @@ namespace WorkerRole1
                     break;
             }
 
-            eventAttributes = new Dictionary<String, Object>();
-            eventAttributes["state"] = "End";
-            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("OnStart", eventAttributes);
+            Trace.TraceInformation("WorkerRole1 has started");
+            NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("OnStart", watch.ElapsedMilliseconds);
 
             return base.OnStart();
         }
@@ -112,6 +107,7 @@ namespace WorkerRole1
         public override void OnStop()
         {
             Trace.TraceInformation("WorkerRole1 is stopping");
+            NewRelic.Api.Agent.NewRelic.SetTransactionName("Worker", "OnStop"); var watch = Stopwatch.StartNew();
 
             //  Stop listening for actuation events.
             eventProcessorHost.UnregisterEventProcessorAsync().Wait();
@@ -122,6 +118,7 @@ namespace WorkerRole1
             base.OnStop();
 
             Trace.TraceInformation("WorkerRole1 has stopped");
+            NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("OnStop", watch.ElapsedMilliseconds);
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)

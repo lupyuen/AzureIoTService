@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<extension xmlns="urn:newrelic-extension">
+  <instrumentation>
+    <tracerFactory>
+      <match assemblyName="WebRole1" className="WebRole1.ActuateDevice">
+        <exactMethodMatcher methodName="Page_Load" />
+      </match>
+      <match assemblyName="WebRole1" className="WebRole1.GetSensorData">
+        <exactMethodMatcher methodName="Page_Load" />
+      </match>
+      <match assemblyName="WebRole1" className="WebRole1.RecordSensorData">
+        <exactMethodMatcher methodName="Page_Load" />
+      </match>
+    </tracerFactory>
+  </instrumentation>
+</extension>
