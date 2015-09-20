@@ -9,7 +9,7 @@
           <FailedRequestLogs containerName="wad-failedrequestlogs" />
           <DataSources>
             <DirectoryConfiguration containerName="netfx-install">
-              <LocalResource name="InstallLogs" relativePath="." />
+              <LocalResource relativePath="." name="InstallLogs" />
             </DirectoryConfiguration>
           </DataSources>
         </Directories>
@@ -31,7 +31,7 @@
           <CrashDumpConfiguration processName="WaWorkerHost.exe" />
           <CrashDumpConfiguration processName="w3wp.exe" />
         </CrashDumps>
-        <Logs scheduledTransferPeriod="PT1M" />
+        <Logs scheduledTransferPeriod="PT1M" scheduledTransferLogLevelFilter="Error" />
       </DiagnosticMonitorConfiguration>
     </WadCfg>
     <StorageAccount>devstoreaccount1</StorageAccount>
