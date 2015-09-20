@@ -5,6 +5,8 @@ REM ***** Setup LogFile with timestamp *****
 set timehour=%time:~0,2%
 set timestamp=%date:~-4,4%%date:~-10,2%%date:~-7,2%-%timehour: =0%%time:~3,2%
 set newreliclog=%PathToInstallLogs%newreliclog-%timestamp%.txt
+set newreliclog2=%PathToInstallLogs%newreliclog-agent-%timestamp%.txt
+set newreliclog3=%PathToInstallLogs%newreliclog-monitor-%timestamp%.txt
 echo Logfile generated at: %newreliclog% >> %newreliclog%
 
 :: Path used for custom configuration and worker role environment varibles
@@ -21,9 +23,13 @@ copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
 echo copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
 copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
 
-:: Quit if running on local PC.
-if not %localappdata%=="" EXIT /B 0
+REM ***** Skip installation when testing on development PC. *****
+echo AZURE_DRIVE_DEV_PATH="%AZURE_DRIVE_DEV_PATH%"" >> "%newreliclog%"
+if "%AZURE_DRIVE_DEV_PATH%"=="" goto PRODSERVER
+echo Skipping installation on development PC >> "%newreliclog%"
+EXIT /B 0
 
+:PRODSERVER
 for /F "usebackq tokens=1,2 delims==" %%i in (`wmic os get LocalDateTime /VALUE 2^>NUL`) do if '.%%i.'=='.LocalDateTime.' set ldt=%%j
 set ldt=%ldt:~0,4%-%ldt:~4,2%-%ldt:~6,2% %ldt:~8,2%:%ldt:~10,2%:%ldt:~12,6%
 
@@ -50,9 +56,11 @@ IF %NR_ERROR_LEVEL% EQU 0 (
 	ECHO Installing the New Relic .net Agent. >> "%newreliclog%" 2>&1
 
 	IF "%IsWorkerRole%" EQU "true" (
-	    msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% INSTALLLEVEL=50 /lv* %newreliclog%2
+	    echo msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% INSTALLLEVEL=50 /lv* >> "%newreliclog%"
+	    msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% INSTALLLEVEL=50 /lv* %newreliclog2%
 	) ELSE (
-	    msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog%2
+	    echo msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* >> "%newreliclog%""
+	    msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog2%
 	)
 
 	:: CUSTOM newrelic.config : Uncomment the lines below if you want to copy a custom newrelic.config file into your instance
@@ -92,7 +100,8 @@ GOTO:EOF
 	SET NR_INSTALLER_NAME=NewRelicServerMonitor_x64_3.3.3.0.msi
 
 	ECHO Installing the New Relic Server Monitor. >> "%newreliclog%" 2>&1
-	msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog%3
+	echo msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* >> "%newreliclog%"
+	msiexec.exe /i %NR_INSTALLER_NAME% /norestart /quiet NR_LICENSE_KEY=%LICENSE_KEY% /lv* %newreliclog3%
 
 	IF %ERRORLEVEL% EQU 0 (
 	  REM  The New Relic Server Monitor installed ok and does not need to be installed again.
