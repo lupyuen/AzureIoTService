@@ -19,6 +19,19 @@ mkdir "%NR_HOME%\extensions\"
 echo copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
 copy /Y newrelic.config "%NR_HOME%" >> %newreliclog%
 
+echo mkdir "%RdRoleRoot%base\x64\" >> %newreliclog%
+mkdir "%RdRoleRoot%base\x64\" >> %newreliclog%
+echo copy /Y newrelic.config "%RdRoleRoot%base\x64\" >> %newreliclog%
+copy /Y newrelic.config "%RdRoleRoot%base\x64\" >> %newreliclog%
+
+echo mkdir "%RdRoleRoot%base\x64\Config\" >> %newreliclog%
+mkdir "%RdRoleRoot%base\x64\Config\" >> %newreliclog%
+echo copy /Y Config\* "%RdRoleRoot%base\x64\Config\" >> %newreliclog%
+copy /Y Config\* "%RdRoleRoot%base\x64\Config\" >> %newreliclog%
+
+echo mkdir "%RdRoleRoot%base\x64\Logs\" >> %newreliclog%
+mkdir "%RdRoleRoot%base\x64\Logs\" >> %newreliclog%
+
 :: CUSTOM INSTRUMENTATION : Uncomment the lines below to copy custom instrumentation into the agent directory.
 echo copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
 copy /y CustomInstrumentation.xml "%NR_HOME%\extensions\" >> %newreliclog%
