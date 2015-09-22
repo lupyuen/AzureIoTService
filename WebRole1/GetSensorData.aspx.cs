@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NRConfig;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Web.UI.WebControls;
 
 namespace WebRole1
 {
+    [Instrument]
     public partial class GetSensorData : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)

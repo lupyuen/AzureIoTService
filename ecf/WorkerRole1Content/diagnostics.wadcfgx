@@ -8,8 +8,8 @@
           <IISLogs containerName="wad-iis-logfiles" />
           <FailedRequestLogs containerName="wad-failedrequestlogs" />
           <DataSources>
-            <DirectoryConfiguration containerName="netfx-install">
-              <LocalResource relativePath="." name="InstallLogs" />
+            <DirectoryConfiguration containerName="new-relic">
+              <Absolute path="D:\ProgramData\New Relic\.NET Agent\Logs" expandEnvironment="false" />
             </DirectoryConfiguration>
           </DataSources>
         </Directories>
@@ -31,7 +31,7 @@
           <CrashDumpConfiguration processName="WaWorkerHost.exe" />
           <CrashDumpConfiguration processName="w3wp.exe" />
         </CrashDumps>
-        <Logs scheduledTransferPeriod="PT1M" scheduledTransferLogLevelFilter="Error" />
+        <Logs scheduledTransferPeriod="PT1M" />
       </DiagnosticMonitorConfiguration>
     </WadCfg>
     <StorageAccount>devstoreaccount1</StorageAccount>

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
+using NRConfig;
 
 namespace SuperSocket.QuickStart.RemoteProcessService.Command
 {
+    [Instrument]
     public class FROZ : StringCommandBase<RemoteProcessSession>
     {
         #region CommandBase<RemotePrcessSession> Members

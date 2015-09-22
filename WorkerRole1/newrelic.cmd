@@ -54,7 +54,10 @@ CALL:INSTALL_NEWRELIC_SERVER_MONITOR
 IF %NR_ERROR_LEVEL% EQU 0 (
 	EXIT /B 0
 ) ELSE (
-	EXIT %NR_ERROR_LEVEL%
+	::  EXIT %NR_ERROR_LEVEL%
+	::  Unable to install New Relic properly with .NET 4.5 sometimes.
+	ECHO Installation failed, error code %NR_ERROR_LEVEL%.  Ignoring error.
+	EXIT /B 0
 )
 
 :: --------------

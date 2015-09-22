@@ -8,8 +8,8 @@
           <IISLogs containerName="wad-iis-logfiles" />
           <FailedRequestLogs containerName="wad-failedrequestlogs" />
           <DataSources>
-            <DirectoryConfiguration containerName="netfx-install">
-              <LocalResource name="InstallLogs" relativePath="."/>
+            <DirectoryConfiguration containerName="new-relic">
+              <Absolute path="D:\ProgramData\New Relic\.NET Agent\Logs" expandEnvironment="false" />
             </DirectoryConfiguration>
           </DataSources>
         </Directories>

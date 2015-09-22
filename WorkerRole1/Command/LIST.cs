@@ -5,9 +5,11 @@ using System.Text;
 using System.Diagnostics;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
+using NRConfig;
 
 namespace SuperSocket.QuickStart.RemoteProcessService.Command
 {
+    [Instrument]
     public class LIST : StringCommandBase<RemoteProcessSession>
     {
         #region CommandBase<RemotePrcessSession> Members

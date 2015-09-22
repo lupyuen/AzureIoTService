@@ -7,9 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Diagnostics;
 using Newtonsoft.Json;
+using NRConfig;
+using SuperSocket.QuickStart.RemoteProcessService;
 
 namespace WorkerRole1
 {
+    [Instrument]
     class EventProcessor : IEventProcessor
     {
         Stopwatch checkpointStopWatch;
@@ -33,6 +36,12 @@ namespace WorkerRole1
 
         async Task IEventProcessor.ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
+            //  Actuate a device by sending an action and parameter to a group ID and device ID.
+            //  This method receives the actuation info from WebRole1.ActuateDevice.aspx via Azure Event Hub.
+            //  WorkerRole1 is a TCP socket server that maintains long-lasting TCP socket connections
+            //  initiated by every IoT device (e.g. LinkIt ONE).  The actuation info is transmitted to
+            //  the designated device through the TCP socket connection. 
+
             foreach (EventData eventData in messages)
             {
                 string data = Encoding.UTF8.GetString(eventData.GetBytes());
@@ -42,11 +51,16 @@ namespace WorkerRole1
                 NewRelic.Api.Agent.NewRelic.SetTransactionName("ActuateDevice", data); var watch = Stopwatch.StartNew();
 
                 //  Convert data to JSON.
-                //  data looks like {"group":"1", "device":"2", "action":"led", "parameter":"on"}
-                var query = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
+                //  data looks like {"group":1, "device":2, "action":"led", "parameter":"on"}
+                var query = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
 
-                //  TODO: Send data to the right session.
-
+                //  If there is no action, then this is a sensor data message, not an actuation message. We skip it.
+                //  Else we process the action by transmitting to the right TCP client.
+                if (query.ContainsKey("action"))
+                {
+                    //  Send data to the right session, according to the group and device IDs provided.
+                    SendMessage(query);
+                }
                 NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric(data, watch.ElapsedMilliseconds);
             }
 
@@ -55,6 +69,42 @@ namespace WorkerRole1
             {
                 await context.CheckpointAsync();
                 this.checkpointStopWatch.Restart();
+            }
+        }
+
+        static void SendMessage(Dictionary<string, object> query)
+        {
+            //  Send data to the right session, according to the group and device IDs provided.
+            //  query contains keys and values like {"group":1, "device":2, "action":"led", "parameter":"on"}
+            var group = "";
+            if (query.ContainsKey("group"))
+                group = query["group"].ToString();
+            var device = "";
+            if (query.ContainsKey("device"))
+                device = query["device"].ToString();
+            var key = group + "_" + device;
+            if (!RemoteProcessSession.allSessions.ContainsKey(key))
+            {
+                //  Can't find the sesison.  We give up.
+                Trace.WriteLine(string.Format("Session not found for group {0} device {1}", 
+                    group, device));
+            }
+            else
+            {
+                //  Get the session for the group and device IDs.
+                var session = RemoteProcessSession.allSessions[key];
+                //  Get the action and parameter.
+                var action = "";
+                if (query.ContainsKey("action"))
+                    action = query["action"].ToString();
+                var parameter = "";
+                if (query.ContainsKey("parameter"))
+                    parameter = query["parameter"].ToString();
+                //  Send the action and parameter to the session, separated by space, e.g. "led on".
+                var msg = string.Format("{0} {1}\r\n", action, parameter);
+                Trace.WriteLine(string.Format("Sending message to group {0} device {1}: {2}",
+                    group, device, msg));
+                session.Send(msg);
             }
         }
     }

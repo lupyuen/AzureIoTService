@@ -12,9 +12,11 @@ using Microsoft.WindowsAzure.Storage;
 using SuperSocket.SocketEngine;
 using SuperSocket.SocketBase;
 using Microsoft.ServiceBus.Messaging;
+using NRConfig;
 
 namespace WorkerRole1
 {
+    [Instrument]
     public class WorkerRole : RoleEntryPoint
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();

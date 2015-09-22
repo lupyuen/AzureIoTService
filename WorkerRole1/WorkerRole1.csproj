@@ -13,6 +13,8 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RoleType>Worker</RoleType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -77,6 +79,10 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NRConfig, Version=1.5.0.0, Culture=neutral, PublicKeyToken=6b481c381180d953, processorArchitecture=MSIL">
+      <HintPath>..\packages\NRConfig.Tool.1.5.0.0\lib\NRConfig.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SuperSocket.Common">
       <HintPath>..\..\SuperSocket(1.6.4).Binaries\net45\Debug\SuperSocket.Common.dll</HintPath>
     </Reference>
@@ -139,9 +145,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CustomInstrumentation.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="NDP452-KB2901954-Web.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -160,4 +163,11 @@
     -->
     <AutoUnifyAssemblyReferences>false</AutoUnifyAssemblyReferences>
   </PropertyGroup>
+  <Import Project="..\packages\NRConfig.MSBuild.1.5.0.0\build\NRConfig.MSBuild.targets" Condition="Exists('..\packages\NRConfig.MSBuild.1.5.0.0\build\NRConfig.MSBuild.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NRConfig.MSBuild.1.5.0.0\build\NRConfig.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NRConfig.MSBuild.1.5.0.0\build\NRConfig.MSBuild.targets'))" />
+  </Target>
 </Project>

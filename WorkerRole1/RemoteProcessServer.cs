@@ -9,9 +9,11 @@ using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
+using NRConfig;
 
 namespace SuperSocket.QuickStart.RemoteProcessService
 {
+    [Instrument]
     public class RemoteProcessServer : AppServer<RemoteProcessSession>
     {
         private Dictionary<string, string> m_FrozedProcesses = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
