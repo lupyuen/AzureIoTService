@@ -97,12 +97,16 @@ namespace WorkerRole1
             if (group != "" && device != "")
             {
                 var key = group + "_" + device;
-                Trace.WriteLine(string.Format("Sending message to group {0} device {1}: {2}",
-                    group, device, msg));
                 if (RemoteProcessSession.allSessions.ContainsKey(key))
                 {
+                    Trace.WriteLine(string.Format("Sending message to group {0} device {1}: {2}",
+                        group, device, msg));
                     try { RemoteProcessSession.allSessions[key].Send(msg); }
                     catch (Exception) { }
+                }
+                else
+                {
+                    Trace.WriteLine(string.Format("Group {0} device {1} not found", group, device));
                 }
                 return;
             }
