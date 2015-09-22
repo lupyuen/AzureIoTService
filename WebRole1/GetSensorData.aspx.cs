@@ -17,6 +17,8 @@ namespace WebRole1
             //  Return a Javascript row to be populated in Excel Web.  Called by Excel Web "Update Sensor Data" addin.
             NewRelic.Api.Agent.NewRelic.SetTransactionName("API", "GetSensorData"); var watch = Stopwatch.StartNew();
             Response.Expires = -1;
+            var timestamp = DateTime.Now.AddHours(8).ToString("s").Replace("T", " ");
+
             //  Accept a list of field names, e.g. fields=Timestamp,Temperature,LightLevel
             var fields = "Timestamp,Temperature,LightLevel";  //  Default fields if none specified.
             if (Request["fields"] != null) fields = Request["fields"];
@@ -27,8 +29,11 @@ namespace WebRole1
             //  Get the row values from the values sent earlier by the sensor.
             System.Collections.Specialized.NameValueCollection sensorData = null;
             if (RecordSensorData.sensorData.ContainsKey(group))
+            {
+                //  Remove the sensor data after reading so it won't be reused.
                 sensorData = RecordSensorData.sensorData[group];
-            RecordSensorData.sensorData[group] = null;
+                RecordSensorData.sensorData.Remove(group);
+            }
             if (sensorData == null)
             {
                 //  If no values sent by the sensor, we return random values for testing.
@@ -36,7 +41,13 @@ namespace WebRole1
                 sensorData["Temperature"] = (new Random().Next(200, 300) / 10.0).ToString();
                 sensorData["LightLevel"] = new Random().Next(100, 200).ToString();
             }
-            var timestamp = DateTime.Now.AddHours(8).ToString("s").Replace("T", " ");
+            //  Copy the timestamp if available.
+            if (RecordSensorData.timestampData.ContainsKey(group))
+            {
+                //  Remove the timestamp data after reading so it won't be reused.
+                timestamp = RecordSensorData.timestampData[group];
+                RecordSensorData.timestampData.Remove(group);
+            }
 
             //  Return the row values as a Javascript array, e.g. ["2015-09-11 16:23:42", 28.5, 185]
             var newRow = new System.Text.StringBuilder();
@@ -66,6 +77,7 @@ namespace WebRole1
                 newRow.AppendFormat("{0}", value);
             }
             newRow.AppendLine("];");
+            //  Write the result to the caller.
             Response.Write(newRow.ToString());
 
             NewRelic.Api.Agent.NewRelic.RecordResponseTimeMetric("GetSensorData", watch.ElapsedMilliseconds);

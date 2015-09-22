@@ -17,10 +17,14 @@ namespace WebRole1
     [Instrument]
     public partial class RecordSensorData : System.Web.UI.Page
     {
-        //  Remember the sensor data in memory.  Dictionary key is the group ID.
+        //  Remember the sensor data in memory.  
         //  Also send the sensor data to Azure Event Hub for further analysis.
+
+        //  Maps Group ID to the sensor data.
         public static Dictionary<string, System.Collections.Specialized.NameValueCollection> sensorData =
             new Dictionary<string, System.Collections.Specialized.NameValueCollection>();
+        //  Maps Group ID to the timestamp.
+        public static Dictionary<string, string> timestampData = new Dictionary<string, string>();
 
         //  Azure Event Hub for sending sensor data.
         static string sensorHub = "sensorhub";
@@ -37,11 +41,14 @@ namespace WebRole1
             var group = "0";  //  If not specified, group = 0.
             if (Request["Group"] != null) group = Request["Group"];
             sensorData[group] = Request.QueryString;
+            var timestamp = DateTime.Now.AddHours(8).ToString("s").Replace("T", " ");
+            timestampData[group] = timestamp;
 
             //  Send the sensor data to Azure Event Hub for further processing.
             //  Convert the query string to a JSON message before sending it.
-            //  The message will look like {"group":1, "device": 2, "Temperature": 31.2, "LightLevel": 99}
+            //  The message will look like {"Timestamp":"2015-01-01 01:01:01", "Group":1, "Device": 2, "Temperature": 31.2, "LightLevel": 99}
             var query = new Dictionary<string, object>();
+            query["Timestamp"] = timestamp;
             foreach (var key in Request.QueryString.AllKeys)
             {
                 string value = Request[key];
