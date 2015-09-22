@@ -10,7 +10,7 @@ namespace SuperSocket.QuickStart.RemoteProcessService
     [Instrument]
     public class RemoteProcessSession : AppSession<RemoteProcessSession>
     {
-        //  This class represents a long-last TCP socket session initiated by an IoT device e.g. LinkIt ONE.
+        //  This class represents a long-lasting TCP socket session initiated by an IoT device e.g. LinkIt ONE.
         //  We keep this socket connection alive so we can send commands and control it.
 
         //  Maps groupID_deviceID to the session for the device.

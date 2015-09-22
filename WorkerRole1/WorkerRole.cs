@@ -19,6 +19,11 @@ namespace WorkerRole1
     [Instrument]
     public class WorkerRole : RoleEntryPoint
     {
+        //  WorkerRole1 is a TCP socket server that maintains long-lasting TCP socket connections
+        //  initiated by every IoT device (e.g. LinkIt ONE).  The TCP socket connection is used to
+        //  transmit the actuation info to the designated device. 
+        //  WorkerRole1 also listens to Azure Event Hub for actuation commands from WebRole1.ActuateDevice.aspx.
+
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
         EventProcessorHost eventProcessorHost = null;
@@ -27,9 +32,9 @@ namespace WorkerRole1
         {
             Trace.TraceInformation("WorkerRole1 is running");
             NewRelic.Api.Agent.NewRelic.SetTransactionName("Worker", "Run"); var watch = Stopwatch.StartNew();
-            //  Start listening for actuation events.
-            string eventHubConnectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=ReceiveRule;SharedAccessKey=905MauqIRlwOAdzbFOrctA3+YtO8Od4lUzFPL0AqAsA=";
-            string eventHubName = "azureiothub";
+            //  Start listening for actuation events from actuatorHub.
+            string eventHubConnectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=ReceiveRule;SharedAccessKey=6lIJjmHJRKkrEPPIPS45Su2GP2oQ2TjwvAzf2hPYr/Q=";
+            string eventHubName = "actuatorhub";
             string storageAccountName = "azureiotstorage";
             string storageAccountKey = "OE8ELPPu30uc1BVRW21WH3Sb6aoTkRNbP4vmYX0eLAukYNS9prF13laVUJHQkx0hVrIeDt88a5TAwQflEcTqNg==";
             string storageConnectionString = string.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}",

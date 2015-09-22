@@ -1,4 +1,6 @@
-﻿using Microsoft.ServiceBus.Messaging;
+﻿//  http://azureiotservice.cloudapp.net/RecordSensorData.aspx?Group=1&Device=1&Temperature=31.2&LightLevel=123   
+
+using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 using NRConfig;
 using System;
@@ -15,8 +17,14 @@ namespace WebRole1
     [Instrument]
     public partial class RecordSensorData : System.Web.UI.Page
     {
+        //  Remember the sensor data in memory.  Dictionary key is the group ID.
+        //  Also send the sensor data to Azure Event Hub for further analysis.
         public static Dictionary<string, System.Collections.Specialized.NameValueCollection> sensorData =
             new Dictionary<string, System.Collections.Specialized.NameValueCollection>();
+
+        //  Azure Event Hub for sending sensor data.
+        static string sensorHub = "sensorhub";
+        static string sensorHubSendRule = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=SendRule;SharedAccessKey=iVZoDRKFlSfflaJxJWOn3z8ZkLIH8HBQ8fwDBgGmSK8=";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -55,7 +63,7 @@ namespace WebRole1
             }
             var message = JsonConvert.SerializeObject(query);
 
-            var eventHubClient = EventHubClient.CreateFromConnectionString(ActuateDevice.connectionString, ActuateDevice.eventHubName);
+            var eventHubClient = EventHubClient.CreateFromConnectionString(sensorHubSendRule, sensorHub);
             System.Diagnostics.Trace.WriteLine(string.Format("{0} > Sending message: {1}", DateTime.Now, message));
             eventHubClient.Send(new EventData(Encoding.UTF8.GetBytes(message)));
             eventHubClient.Close();

@@ -17,8 +17,9 @@ namespace WebRole1
     [Instrument]
     public partial class ActuateDevice : System.Web.UI.Page
     {
-        public static string eventHubName = "azureiothub";
-        public static string connectionString = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=SendRule;SharedAccessKey=+TNGe5Awzvd0QLFUWbEWxo7atZ1JXgCPkajeEIqVMu8=";
+        //  Azure Event Hub for sending actuator commands.
+        static string actuatorHub = "actuatorhub";
+        static string actuatorHubSendRule = "Endpoint=sb://azureiothub.servicebus.windows.net/;SharedAccessKeyName=SendRule;SharedAccessKey=/rizA/Kgg+VnU8T/CNSJaKh/U6jQCgOer/jx0XWBHow=";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -59,7 +60,7 @@ namespace WebRole1
             }
             var message = JsonConvert.SerializeObject(query);
 
-            var eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, eventHubName);
+            var eventHubClient = EventHubClient.CreateFromConnectionString(actuatorHubSendRule, actuatorHub);
             System.Diagnostics.Trace.WriteLine(string.Format("{0} > Sending message: {1}", DateTime.Now, message));
             eventHubClient.Send(new EventData(Encoding.UTF8.GetBytes(message)));
             eventHubClient.Close();
