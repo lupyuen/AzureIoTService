@@ -82,29 +82,50 @@ namespace WorkerRole1
             var device = "";
             if (query.ContainsKey("device"))
                 device = query["device"].ToString();
-            var key = group + "_" + device;
-            if (!RemoteProcessSession.allSessions.ContainsKey(key))
+
+            //  Get the action and parameter.
+            var action = "";
+            if (query.ContainsKey("action"))
+                action = query["action"].ToString();
+            var parameter = "";
+            if (query.ContainsKey("parameter"))
+                parameter = query["parameter"].ToString();
+            //  Send the action and parameter to the session, separated by space, e.g. "led on".
+            var msg = string.Format("{0} {1}\r\n", action, parameter);
+
+            //  If group and device are both specified, send directly to the device.
+            if (group != "" && device != "")
             {
-                //  Can't find the sesison.  We give up.
-                Trace.WriteLine(string.Format("Session not found for group {0} device {1}", 
-                    group, device));
-            }
-            else
-            {
-                //  Get the session for the group and device IDs.
-                var session = RemoteProcessSession.allSessions[key];
-                //  Get the action and parameter.
-                var action = "";
-                if (query.ContainsKey("action"))
-                    action = query["action"].ToString();
-                var parameter = "";
-                if (query.ContainsKey("parameter"))
-                    parameter = query["parameter"].ToString();
-                //  Send the action and parameter to the session, separated by space, e.g. "led on".
-                var msg = string.Format("{0} {1}\r\n", action, parameter);
+                var key = group + "_" + device;
                 Trace.WriteLine(string.Format("Sending message to group {0} device {1}: {2}",
                     group, device, msg));
-                session.Send(msg);
+                if (RemoteProcessSession.allSessions.ContainsKey(key))
+                {
+                    try { RemoteProcessSession.allSessions[key].Send(msg); }
+                    catch (Exception) { }
+                }
+                return;
+            }
+            if (group != "" && device == "")
+            {
+                //  If group is specified but not device, we send to all devices in that group.
+                Trace.WriteLine(string.Format("Sending to group {0}: {1}", group, msg));
+                foreach (var k in RemoteProcessSession.allSessions.Keys)
+                {
+                    if (k.StartsWith(group + "_"))
+                    {
+                        try { RemoteProcessSession.allSessions[k].Send(msg); }
+                        catch (Exception) { }
+                    }  
+                }
+                return;
+            }
+            //  We blast all devices.
+            Trace.WriteLine(string.Format("Sending to everyone: {0}", msg));
+            foreach (var k in RemoteProcessSession.allSessions.Keys)
+            {
+                try { RemoteProcessSession.allSessions[k].Send(msg); }
+                catch (Exception) { }
             }
         }
     }

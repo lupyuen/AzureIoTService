@@ -107,8 +107,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\FROZ.cs" />
-    <Compile Include="Command\KILL.cs" />
+    <Compile Include="Command\HELLO.cs" />
     <Compile Include="Command\LIST.cs" />
     <Compile Include="Command\QUIT.cs" />
     <Compile Include="EventProcessor.cs" />

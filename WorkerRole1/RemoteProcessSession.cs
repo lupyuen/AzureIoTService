@@ -19,8 +19,14 @@ namespace SuperSocket.QuickStart.RemoteProcessService
         static int nextDeviceID = 1;
 
         //  Group and device IDs for the device connected to this session.
-        string groupID;
-        string deviceID;
+        public string groupID;
+        public string deviceID;
+
+        public string getKey()
+        {
+            //  Return the unique key used to identify this device in allSessions.
+            return groupID + "_" + deviceID;
+        }
 
         public new RemoteProcessServer AppServer
         {
@@ -30,20 +36,24 @@ namespace SuperSocket.QuickStart.RemoteProcessService
         protected override void OnSessionStarted()
         {
             groupID = "1";  //  Hardcode for now.
-            deviceID = nextDeviceID++.ToString();  //  Generate a running unique device ID for now.
+            for (;;)
+            {
+                //  Generate a running unique device ID for now.
+                deviceID = nextDeviceID++.ToString();
+                //  Keep looping until we find a device ID that's not used.
+                if (!allSessions.ContainsKey(getKey())) break;
+            }
             //  Add to list of active sessions.
-            var key = groupID + "_" + deviceID;
-            allSessions[key] = this;
-            Send(string.Format("Welcome to AzureIoTService! Your group ID is {0} and device ID is {1}",
+            allSessions[getKey()] = this;
+            Send(string.Format("Welcome to Azure IoT Service! Your group ID is {0} and device ID is {1}",
                 groupID, deviceID));
         }
 
         protected override void OnSessionClosed(CloseReason reason)
         {
             //  Remove from list of active sessions.
-            var key = groupID + "_" + deviceID;
-            if (allSessions.ContainsKey(key))
-                allSessions.Remove(key);
+            if (allSessions.ContainsKey(getKey()))
+                allSessions.Remove(getKey());
         }
 
         protected override void HandleException(Exception e)

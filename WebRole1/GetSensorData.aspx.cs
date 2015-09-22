@@ -25,6 +25,8 @@ namespace WebRole1
             //  Accept a group name for selecting sensors by group, e.g. Group=1
             var group = "0";  //  If not specified, group = 0.
             if (Request["Group"] != null) group = Request["Group"];
+        
+            var newRow = new System.Text.StringBuilder();
 
             //  Get the row values from the values sent earlier by the sensor.
             System.Collections.Specialized.NameValueCollection sensorData = null;
@@ -36,10 +38,18 @@ namespace WebRole1
             }
             if (sensorData == null)
             {
-                //  If no values sent by the sensor, we return random values for testing.
-                sensorData = new System.Collections.Specialized.NameValueCollection();
-                sensorData["Temperature"] = (new Random().Next(200, 300) / 10.0).ToString();
-                sensorData["LightLevel"] = new Random().Next(100, 200).ToString();
+                //  If no values sent by the sensor and group=0, we return random values for testing.
+                if (group == "0")
+                {
+                    sensorData = new System.Collections.Specialized.NameValueCollection();
+                    sensorData["Temperature"] = (new Random().Next(200, 300) / 10.0).ToString();
+                    sensorData["LightLevel"] = new Random().Next(100, 200).ToString();
+                }
+                else
+                {
+                    //  No more data available now.
+                    newRow.AppendLine("newRow = null;");
+                }
             }
             //  Copy the timestamp if available.
             if (RecordSensorData.timestampData.ContainsKey(group))
@@ -48,35 +58,36 @@ namespace WebRole1
                 timestamp = RecordSensorData.timestampData[group];
                 RecordSensorData.timestampData.Remove(group);
             }
-
-            //  Return the row values as a Javascript array, e.g. ["2015-09-11 16:23:42", 28.5, 185]
-            var newRow = new System.Text.StringBuilder();
-            newRow.Append("newRow = [");
-            bool firstField = true;
-            //  Add each field indicated in the field list.
-            foreach (var field in fields.Split(','))
+            if (newRow.Length == 0)
             {
-                if (!firstField) newRow.Append(", ");
-                firstField = false;
-                var value = sensorData[field];
-                if (field == "Timestamp") value = timestamp;
-                if (value == null)
+                //  Return the row values as a Javascript array, e.g. ["2015-09-11 16:23:42", 28.5, 185]
+                newRow.Append("newRow = [");
+                bool firstField = true;
+                //  Add each field indicated in the field list.
+                foreach (var field in fields.Split(','))
                 {
-                    //  If value not specified by sensor, we provide the empty string.
-                    value = "''";
-                }
-                else
-                {
-                    //  If value is not numeric, we surround with quotes.
-                    float output;
-                    if (!float.TryParse(value, out output))
+                    if (!firstField) newRow.Append(", ");
+                    firstField = false;
+                    var value = sensorData[field];
+                    if (field == "Timestamp") value = timestamp;
+                    if (value == null)
                     {
-                        value = "'" + value + "'";
+                        //  If value not specified by sensor, we provide the empty string.
+                        value = "''";
                     }
+                    else
+                    {
+                        //  If value is not numeric, we surround with quotes.
+                        float output;
+                        if (!float.TryParse(value, out output))
+                        {
+                            value = "'" + value + "'";
+                        }
+                    }
+                    newRow.AppendFormat("{0}", value);
                 }
-                newRow.AppendFormat("{0}", value);
+                newRow.AppendLine("];");
             }
-            newRow.AppendLine("];");
             //  Write the result to the caller.
             Response.Write(newRow.ToString());
 
